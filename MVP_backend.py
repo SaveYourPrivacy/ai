@@ -106,9 +106,7 @@ term_chain = get_llm_chain(
 #-----[ FastAPI ]-----------------------
 @app.post("/MVP", response_model=TermsResponse)
 def analyze(input: TermInput) -> TermsResponse:
-    """
-    약관 텍스트를 받아 분석하고, 구조화된 JSON(TermsResponse)을 반환합니다.
-    """
+    
     # input.model_dump()가 TermInput 형태의 딕셔너리를 생성
     request = input.model_dump()
     
