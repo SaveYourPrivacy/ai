@@ -113,3 +113,6 @@ def analyze(input: TermInput) -> TermsResponse:
     response = term_chain.invoke(request) # response는 parser에 의해 생성된 딕셔너리가 초기화됨.
     
     return response
+
+
+## TEST222
