@@ -44,21 +44,21 @@ def setup_rag():
         print("법률 URL의 전체 텍스트를 LAW_TEXT 변수에 복사해 주세요.")
         return
 
-    # 1. 텍스트 분할 (Chunking)
+    # 1. 텍스트 분할
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000, 
         chunk_overlap=100
     )
     docs = text_splitter.create_documents([LAW_TEXT])
     
-    # 2. 임베딩 (Embedding)
+    # 2. 임베딩
     embeddings = OpenAIEmbeddings()
     
-    # 3. 벡터 저장소 (Vector Store) - FAISS 사용
+    # 3. 벡터 저장소 (FAISS 사용)  install 필요!!!!!
     # docs를 임베딩하여 FAISS 벡터 저장소를 생성
     vector_store = FAISS.from_documents(docs, embeddings)
     
-    # 4. 검색기 (Retriever) 생성
+    # 4. 검색기 생성
     # 이 검색기는 k=5 (가장 유사한 5개) 조각을 검색
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
     print("RAG 벡터 저장소 및 검색기(Retriever)가 성공적으로 준비되었습니다.")
@@ -140,7 +140,7 @@ def get_llm_chain(
         parser: JsonOutputParser
 ) -> RunnableSequence:
     
-    chain = ( # 입력값은 model_dump()가 깔끔하게 딕셔너리를 생성하므로 전처리 필요 X
+    chain = ( # 입력값은 model_dump()가 깔끔하게 딕셔너리를 생성하므로 전처리 필요 X, 이젠 직접 딕셔너리 생성해서 넣음
         prompt
         | llm
         | parser  # 출력값을 TermsResponse JSON형태의 딕셔너리로 반환, 때문에 출력값 전처리도 필요 X
