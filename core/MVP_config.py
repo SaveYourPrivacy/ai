@@ -33,3 +33,4 @@ class PromptTemplates(str, Enum):
     당신의 응답은 반드시 JSON 형식이어야 하며, 다음 스키마를 준수해야 합니다.
     {format_instructions}
     """
+    

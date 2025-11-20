@@ -38,3 +38,4 @@ class TermsResponse(BaseModel): # 분석기의 처리결과를 최종 반환하�
     termsSummary: TermsSummary = Field(description="약관 상세 내용 요약 (주요점, 권리, 의무)")
     unfairClauses: List[UnfairClause] = Field(description="발견된 불공정 조항 목록")
     recommendations: List[str] = Field(description="사용자 또는 기업에게 제안하는 개선 사항 또는 행동 지침 리스트")
+    
