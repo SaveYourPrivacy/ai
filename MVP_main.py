@@ -2,8 +2,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from core.MVP_rag import setup_rag
-from routers import MVP
+from Terms_Analyze.core.MVP_rag import setup_rag
+from Terms_Analyze.routers import MVP
+from Complain_Email.routers import Complain_Email
 
 app = FastAPI()
 app.add_middleware(
@@ -14,7 +15,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# MVP 약관분석 라우터
 app.include_router(MVP.router)
+# 컴플레인 이메일 생성 라우터
+app.include_router(Complain_Email.router)
+
 
 # FastAPI 구동시 RAG 셋업을 최초 1회 실행
 @app.on_event("startup")

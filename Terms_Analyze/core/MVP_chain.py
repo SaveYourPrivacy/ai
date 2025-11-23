@@ -4,8 +4,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnableSequence
 from langchain_core.output_parsers import JsonOutputParser
 
-from schemas.MVP_dto import TermsResponse
-from core.MVP_config import PromptTemplates
+from Terms_Analyze.schemas.MVP_dto import TermsResponse
+from Terms_Analyze.core.MVP_config import PromptTemplates
 
 #--------------------------------------------
 from dotenv import load_dotenv
