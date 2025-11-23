@@ -1,14 +1,14 @@
 from fastapi import APIRouter
-from schemas.MVP_dto import TermInput, TermsResponse
-from core.MVP_rag import get_retriever
-from core.MVP_chain import term_chain
+from Terms_Analyze.schemas.MVP_dto import TermInput, TermsResponse
+from Terms_Analyze.core.MVP_rag import get_retriever
+from Terms_Analyze.core.MVP_chain import term_chain
 
 router = APIRouter(
     tags=["UnfairTerm Analysis"]
 )
 
 #-----[ FastAPI ]-----------------------
-@router.post("/MVP", response_model=TermsResponse)
+@router.post("/terms_analyze", response_model=TermsResponse)
 def analyze(input: TermInput) -> TermsResponse:
     
     retriever = get_retriever()

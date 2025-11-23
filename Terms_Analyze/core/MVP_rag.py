@@ -1,7 +1,7 @@
 #-------[LangChain RAG]--------------------
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from data.LAW_TEXT import LAW_TEXT
+from Terms_Analyze.data.LAW_TEXT import LAW_TEXT
 from langchain_openai import OpenAIEmbeddings
 
 retriever = None # RAG 사용을 위해 검색기 retriever 전역변수 선언
