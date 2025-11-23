@@ -1,13 +1,15 @@
 from typing import List
 from pydantic import BaseModel, Field
 
-#-------[ DTO ]--------------------------------------
+#-------[ Request DTO ]--------------------------------------
 # (추가학습) Field(description=) 을 통해 각 스키마의 주석을 추가하고
 #           LLM이 스키마에 데이터를 초기화할 때, 주석을 참고하게 하여 초기화할 데이터의 형식을 지정할 수 있다. 
 class TermInput(BaseModel): # Post 요청을 전달하는 DTO
     term: str # 입력 약관
     category: str = Field(description="약관의 종류 (예: '환불 및 해지 조항')") # 응답 향상을 위한 약관 종류
 
+
+#-------[ Response DTO ]--------------------------------------
 class AnalysisSummary(BaseModel): # 최종 DTO의 첫 요소, 분석 약관 요약 및 평가
     title: str = Field(description="분석 보고서의 제목 (예: '약관 분석 요약')")
     overview: str = Field(description="전체적인 분석 결과에 대한 한 줄 요약(예: 총 6개의 조항 중 3개의 조항에서 소비자에게 불리한 불공정 조항이 발견되었습니다.)")
@@ -38,4 +40,3 @@ class TermsResponse(BaseModel): # 분석기의 처리결과를 최종 반환하�
     termsSummary: TermsSummary = Field(description="약관 상세 내용 요약 (주요점, 권리, 의무)")
     unfairClauses: List[UnfairClause] = Field(description="발견된 불공정 조항 목록")
     recommendations: List[str] = Field(description="사용자 또는 기업에게 제안하는 개선 사항 또는 행동 지침 리스트")
-    
