@@ -7,7 +7,7 @@ router = APIRouter(
 )
 
 @router.post("/complain_email", response_model=ComplaintResponse)
-async def generate_complaint(request: ComplaintRequest) -> ComplaintResponse:
+def generate_complaint(request: ComplaintRequest) -> ComplaintResponse:
     
     # Request JSON 형태를 딕셔너리 형태로 변환
     input_data = request.model_dump()
