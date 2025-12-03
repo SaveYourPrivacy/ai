@@ -1,6 +1,10 @@
 from typing import List
 from fastapi import APIRouter
+<<<<<<< Updated upstream
 from Terms_Analyze.schemas.MVP_dto import ActionGuideline, AdditionalNoteInput, TermInput, TermsResponse, UnfairClause
+=======
+from Terms_Analyze.schemas.MVP_dto import TermInput, TermsResponse
+>>>>>>> Stashed changes
 from Terms_Analyze.core.MVP_rag import get_retriever
 from Terms_Analyze.core.MVP_chain import term_chain
 
