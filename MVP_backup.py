@@ -1,10 +1,7 @@
-from typing import List
 from fastapi import APIRouter
-from Terms_Analyze.schemas.MVP_dto import ActionGuideline, AdditionalNoteInput, TermInput, TermsResponse, UnfairClause
+from Terms_Analyze.schemas.MVP_dto import TermInput, TermsResponse
 from Terms_Analyze.core.MVP_rag import get_retriever
 from Terms_Analyze.core.MVP_chain import term_chain
-
-from AdditionalNotes.MVP_AdditionalNotes import generate_action_guidelines
 
 router = APIRouter(
     tags=["UnfairTerm Analysis"]
@@ -14,9 +11,9 @@ router = APIRouter(
 @router.post("/terms_analyze", response_model=TermsResponse)
 def analyze(input: TermInput) -> TermsResponse:
     
-    # 수정된 부분: 카테고리 기반 검색기 호출
+    # 카테고리로 retriever 선택하도록 변경
     retriever = get_retriever(input.category)
-
+    
     # RAG 생성 실패시 예외처리
     if retriever is None:
         print("경고: 검색기가 준비되지 않았습니다. RAG 없이 일반 분석을 수행합니다.")
@@ -39,12 +36,3 @@ def analyze(input: TermInput) -> TermsResponse:
     response = term_chain.invoke(chain_input) # response는 parser에 의해 생성된 딕셔너리가 초기화됨.
     
     return response
-
-#추가 사항 입력시 행동 지침 출력
-@router.post("/MVP/Additional", response_model=List[ActionGuideline])
-def get_action_guidelines(
-    unfair_clauses: List[UnfairClause],  # 이전 분석 결과 일부 또는 전체 전달
-    additional_input: AdditionalNoteInput
-):
-    guidelines = generate_action_guidelines(unfair_clauses, additional_input)
-    return guidelines
