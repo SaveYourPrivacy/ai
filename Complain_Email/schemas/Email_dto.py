@@ -8,9 +8,10 @@ from Terms_Analyze.schemas.MVP_dto import UnfairClause
 #-------[ Request DTO ]--------------------------------------
 class ComplaintRequest(BaseModel):
     serviceName: str = Field(description="서비스 또는 기업명")
-    unfairClauses: List[UnfairClause] = Field(description="발견된 불공정 조항 목록")
+    #unfairClauses: List[UnfairClause] = Field(description="발견된 불공정 조항 목록")
     userSituation: str = Field(description="사용자의 구체적 피해 상황")
     desiredOutcome: str = Field(description="사용자가 원하는 결과")
+    session_id: str = Field(description="메모리 조회 용도 세션 ID")
 
 #-------[ Response DTO ]--------------------------------------
 class ComplaintResponse(BaseModel):
