@@ -10,6 +10,7 @@ class PromptTemplates(str, Enum):
     특히 이 약관은 '{category}' 유형에 대한 내용입니다.
     이 분야와 관련된 [법률 근거]에 초점을 맞추어 다음 단계로 분석하십시오.
 
+   [분석 지침]
     1. 전체 요약 (summary): 전체 조항 수, 불공정 조항 수, 위험도를 평가하십시오.
     2. 상세 내용 (termsSummary): 약관의 주요 내용, 사용자의 권리와 의무를 각각 요약하십시오.
     3. 불공정 조항 분석 (unfairClauses): 
@@ -19,17 +20,17 @@ class PromptTemplates(str, Enum):
     4. 제언 (recommendations): 이를 개선하기 위한 구체적인 조언을 리스트로 작성하십시오.
 
     ---
-    [법률 근거]:
+    [법률 근거]
     {law_context}
     ---
-    [분석 초점]:
+    [분석 초점]
     {category}
     ---
-    [약관 텍스트]:
+    [약관 텍스트]
     {term}
     ---
 
-    [출력 지시]:
+    [출력 지시]
     당신의 응답은 반드시 JSON 형식이어야 하며, 다음 스키마를 준수해야 합니다.
     {format_instructions}
     """
