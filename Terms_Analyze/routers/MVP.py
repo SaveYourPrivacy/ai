@@ -1,8 +1,11 @@
 from typing import List
 from fastapi import APIRouter
+import uuid
+from langchain.memory import ConversationBufferMemory
 from Terms_Analyze.schemas.MVP_dto import ActionGuideline, AdditionalNoteInput, TermInput, TermsResponse, UnfairClause
 from Terms_Analyze.core.MVP_rag import get_retriever
 from Terms_Analyze.core.MVP_chain import term_chain
+from Terms_Analyze.schemas.MVP_dto import sessions
 
 from AdditionalNotes.MVP_AdditionalNotes import generate_action_guidelines
 
@@ -15,6 +18,7 @@ router = APIRouter(
 def analyze(input: TermInput) -> TermsResponse:
     
     # 수정된 부분: 카테고리 기반 검색기 호출
+    # 입력 카테고리는 반드시 '광고', '환불', '개인정보', '책임제한', '자동결제' 중 하나
     retriever = get_retriever(input.category)
 
     # RAG 생성 실패시 예외처리
@@ -34,9 +38,20 @@ def analyze(input: TermInput) -> TermsResponse:
         "category": input.category,
         "law_context": law_context_text
     }
-    
+
+    session_id = str(uuid.uuid4())
+    memory = ConversationBufferMemory(return_messages=True)
+
     # LLM 호출 및 출력값 반환
     response = term_chain.invoke(chain_input) # response는 parser에 의해 생성된 딕셔너리가 초기화됨.
+
+    memory.save_context(
+        {"input":f"이것은 방금 분석된 약관의 불공정 조항들입니다. \n {response}"},
+        {"output": "네, 해당 정보를 바탕으로 컴플레인 메일 작성을 도와드리겠습니다."}
+    )
+
+    sessions[session_id] = memory
+    response["session_id"] = session_id
     
     return response
 
