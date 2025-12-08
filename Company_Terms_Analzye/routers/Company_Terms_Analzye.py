@@ -10,7 +10,7 @@ router = APIRouter(
 @router.post("/company_terms_analyze", response_model=CompanyAnalysisResponse)
 def analyze_company( input: CompanyAnalysisRequest ) -> CompanyAnalysisResponse:
     
-    retriever = get_retriever()
+    retriever = get_retriever(input.category)
     # RAG 생성 실패시 예외처리
     if retriever is None:
         print("경고: 검색기가 준비되지 않았습니다. RAG 없이 일반 분석을 수행합니다.")
@@ -24,6 +24,7 @@ def analyze_company( input: CompanyAnalysisRequest ) -> CompanyAnalysisResponse:
 
     chain_input = {
         "term": input.term,
+        "category": input.category,
         "law_context": law_context_text
     }
     return company_chain.invoke(chain_input)
