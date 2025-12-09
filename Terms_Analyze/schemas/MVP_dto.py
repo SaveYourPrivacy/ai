@@ -1,14 +1,13 @@
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from pydantic import BaseModel, Field
-from langchain.memory import ConversationBufferMemory
-
 
 #-------[ Request DTO ]--------------------------------------
 # (추가학습) Field(description=) 을 통해 각 스키마의 주석을 추가하고
 #           LLM이 스키마에 데이터를 초기화할 때, 주석을 참고하게 하여 초기화할 데이터의 형식을 지정할 수 있다. 
 class TermInput(BaseModel): # Post 요청을 전달하는 DTO
     term: str # 입력 약관
-    category: str = Field(description="약관의 종류 (예: '환불', '광고', '개인정보')") # 응답 향상을 위한 약관 종류
+    category: str = Field(description="약관의 종류 (예: '환불 및 해지 조항')") # 응답 향상을 위한 약관 종류
+
 
 #-------[ Response DTO ]--------------------------------------
 class AnalysisSummary(BaseModel): # 최종 DTO의 첫 요소, 분석 약관 요약 및 평가
@@ -26,7 +25,7 @@ class TermsSummary(BaseModel): # 최종 DTO의 두번째 요소, 약관의 상�
 class Issue(BaseModel): # UnfairClause 객체 속 문제점 항목의 세부 요소, 컨테이너 클래스
     type: str = Field(description="불공정 이슈의 유형 (예: '절차 위반', '개인정보 침해', '면책 조항 과다')")
     description: str = Field(description="해당 이슈가 왜 문제인지에 대한 상세 설명")
-    severity: str = Field(description="이슈의 심각도 (예: '높음', '중간', '낮음')")
+    severity: str = Field(description="이슈의 심각도 (예: '상', '중', '하')")
     relatedLaw: str = Field(description="위반되는 [법률 근거]의 구체적 조항 (예: '약관규제법 제X조')")
 
 # 최종 DTO의 세번째 요소, 불공정 약관 구절별 상세
@@ -41,19 +40,3 @@ class TermsResponse(BaseModel): # 분석기의 처리결과를 최종 반환하�
     termsSummary: TermsSummary = Field(description="약관 상세 내용 요약 (주요점, 권리, 의무)")
     unfairClauses: List[UnfairClause] = Field(description="발견된 불공정 조항 목록")
     recommendations: List[str] = Field(description="사용자 또는 기업에게 제안하는 개선 사항 또는 행동 지침 리스트")
-    session_id: str = Field(description="약관 분석 시 발급받는 세션 ID, 반드시 빈 문자열로 반환하시오")
-
-
-#추가 사항에 대한 행동 지침 출력
-class AdditionalNoteInput(BaseModel):
-    situation: str = Field(description="추가 상황 설명 (예: '계약 해지 요청')")
-    clause_number: Optional[str] = Field(default=None, description="관련 약관 조항 번호(Optional)")
-
-class ActionGuideline(BaseModel):
-    recommendation: str = Field(description="권장 행동 지침")
-    reason: str = Field(description="행동 지침의 이유 또는 법적 근거 설명")
-    related_law: str = Field(description="참고할 법률 조항이나 판례")
-
-#-------[ Session DTO ]--------------------------------------
-# 출력결과 메모리 저장용 세션 Dto
-sessions: Dict[str, ConversationBufferMemory] = {}

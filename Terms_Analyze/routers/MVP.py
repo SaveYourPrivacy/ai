@@ -1,13 +1,9 @@
 from typing import List
 from fastapi import APIRouter
 import uuid
-from langchain.memory import ConversationBufferMemory
-from Terms_Analyze.schemas.MVP_dto import ActionGuideline, AdditionalNoteInput, TermInput, TermsResponse, UnfairClause
+from Terms_Analyze.schemas.MVP_dto import TermInput, TermsResponse
 from Terms_Analyze.core.MVP_rag import get_retriever
 from Terms_Analyze.core.MVP_chain import term_chain
-from Terms_Analyze.schemas.MVP_dto import sessions
-
-from AdditionalNotes.MVP_AdditionalNotes import generate_action_guidelines
 
 router = APIRouter(
     tags=["UnfairTerm Analysis"]
@@ -40,26 +36,10 @@ def analyze(input: TermInput) -> TermsResponse:
     }
 
     session_id = str(uuid.uuid4())
-    memory = ConversationBufferMemory(return_messages=True)
 
     # LLM 호출 및 출력값 반환
     response = term_chain.invoke(chain_input) # response는 parser에 의해 생성된 딕셔너리가 초기화됨.
 
-    memory.save_context(
-        {"input":f"이것은 방금 분석된 약관의 불공정 조항들입니다. \n {response}"},
-        {"output": "네, 해당 정보를 바탕으로 컴플레인 메일 작성을 도와드리겠습니다."}
-    )
-
-    sessions[session_id] = memory
     response["session_id"] = session_id
     
     return response
-
-#추가 사항 입력시 행동 지침 출력
-@router.post("/MVP/Additional", response_model=List[ActionGuideline])
-def get_action_guidelines(
-    unfair_clauses: List[UnfairClause],  # 이전 분석 결과 일부 또는 전체 전달
-    additional_input: AdditionalNoteInput
-):
-    guidelines = generate_action_guidelines(unfair_clauses, additional_input)
-    return guidelines

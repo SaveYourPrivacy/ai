@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter
 
 from AdditionalNotes.core.AdditionalNotes_chain import (
