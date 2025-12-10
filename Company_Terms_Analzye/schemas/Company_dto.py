@@ -43,7 +43,7 @@ class CompanyTermsSummary(BaseModel):
     keyRights: List[str] = Field(description="기업이 보유한 핵심 권한 요약 리스트")
     keyObligations: List[str] = Field(description="기업이 져야 할 법적 의무 요약 리스트")
 class Issue(BaseModel):
-    riskType: str = Field(description="취약점 유형 (예: '법적 효력 없음', '규제 위반', '모호한 조항')") 
+    type: str = Field(description="취약점 유형 (예: '법적 효력 없음', '규제 위반', '모호한 조항')") 
     description: str = Field(description="해당 조항이 왜 법적으로 취약한지 상세 설명")
     severity: str = Field(description="리스크 심각도 (예: '높음', '중간', '낮음')")
     relatedLaw: str = Field(description="위반 소지가 있는 [법률 근거]의 구체적 조항 (예: '약관규제법 제X조')")
