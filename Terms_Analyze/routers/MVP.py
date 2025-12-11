@@ -1,11 +1,9 @@
 from typing import List
 from fastapi import APIRouter
-from Terms_Analyze.schemas.MVP_dto import ActionGuideline, AdditionalNoteInput, TermInput, TermsResponse, UnfairClause
+import uuid
 from Terms_Analyze.schemas.MVP_dto import TermInput, TermsResponse
 from Terms_Analyze.core.MVP_rag import get_retriever
 from Terms_Analyze.core.MVP_chain import term_chain
-
-from AdditionalNotes.MVP_AdditionalNotes import generate_action_guidelines
 
 router = APIRouter(
     tags=["UnfairTerm Analysis"]
@@ -15,7 +13,10 @@ router = APIRouter(
 @router.post("/terms_analyze", response_model=TermsResponse)
 def analyze(input: TermInput) -> TermsResponse:
     
-    retriever = get_retriever()
+    # 수정된 부분: 카테고리 기반 검색기 호출
+    # 입력 카테고리는 반드시 '광고', '환불', '개인정보', '책임제한', '자동결제' 중 하나
+    retriever = get_retriever(input.category)
+
     # RAG 생성 실패시 예외처리
     if retriever is None:
         print("경고: 검색기가 준비되지 않았습니다. RAG 없이 일반 분석을 수행합니다.")
@@ -33,8 +34,12 @@ def analyze(input: TermInput) -> TermsResponse:
         "category": input.category,
         "law_context": law_context_text
     }
-    
+
+    session_id = str(uuid.uuid4())
+
     # LLM 호출 및 출력값 반환
     response = term_chain.invoke(chain_input) # response는 parser에 의해 생성된 딕셔너리가 초기화됨.
+
+    response["session_id"] = session_id
     
     return response

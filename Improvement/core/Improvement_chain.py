@@ -55,11 +55,16 @@ def generate_improvements(analysis_result: dict) -> ImprovementResponse:
     """
     from Terms_Analyze.core.MVP_rag import get_retriever
         
-    retriever = get_retriever()
+    category = analysis_result.get("category", "B2C")
+    retriever = get_retriever(category)
     
+    if retriever is None:
+        law_context = "약관규제법 제3~7조 (RAG 검색 실패 - 기본값 사용)"
+
     # 관련 법률 검색 (약관 개선 기준)
-    law_docs = retriever.invoke("약관 개선 기준 불공정 조항 수정")
-    law_context = "\n".join([doc.page_content for doc in law_docs]) if law_docs else "약관규제법 제3~7조"
+    else:
+        law_docs = retriever.invoke("약관 개선 기준 불공정 조항 수정")
+        law_context = "\n".join([doc.page_content for doc in law_docs]) if law_docs else "약관규제법 제3~7조"
     
     chain_input = {
         "unfair_clauses": analysis_result.get("unfairClauses", []),
