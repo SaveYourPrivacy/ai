@@ -45,7 +45,7 @@ def setup_rag():
         file_text = load_text(filepath)
 
         if not file_text:
-            print(f"⚠️ '{category}' 카테고리 로딩 실패 (파일 미존재)")
+            print(f"'{category}' 카테고리 로딩 실패 (파일 미존재)")
             continue
 
         # 문서 생성
