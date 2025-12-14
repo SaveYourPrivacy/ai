@@ -44,16 +44,6 @@ class TermsResponse(BaseModel): # 분석기의 처리결과를 최종 반환하�
     session_id: str = Field(description="약관 분석 시 발급받는 세션 ID, 반드시 빈 문자열로 반환하시오")
 
 
-#추가 사항에 대한 행동 지침 출력
-class AdditionalNoteInput(BaseModel):
-    situation: str = Field(description="추가 상황 설명 (예: '계약 해지 요청')")
-    clause_number: Optional[str] = Field(default=None, description="관련 약관 조항 번호(Optional)")
-
-class ActionGuideline(BaseModel):
-    recommendation: str = Field(description="권장 행동 지침")
-    reason: str = Field(description="행동 지침의 이유 또는 법적 근거 설명")
-    related_law: str = Field(description="참고할 법률 조항이나 판례")
-
 #-------[ Session DTO ]--------------------------------------
 # 출력결과 메모리 저장용 세션 Dto
 sessions: Dict[str, ConversationBufferMemory] = {}
