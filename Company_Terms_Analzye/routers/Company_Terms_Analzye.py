@@ -88,7 +88,7 @@ def analyze_company_from_pdf ( file: UploadFile,
     memory = ConversationBufferMemory(return_messages=True)
 
     memory.save_context(
-        {"input": f"이것은 방금 분석된 약관의 불공정 조항들입니다. \n {response}"},
+        {"input": f"이것은 방금 분석된 약관의 취약 조항들입니다. \n {response}"},
         {"output": "네, 해당 정보를 바탕으로 요청사항을 도와드리겠습니다."}
     )
 
