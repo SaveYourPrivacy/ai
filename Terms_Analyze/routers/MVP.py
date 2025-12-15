@@ -66,6 +66,7 @@ def analyze(input: TermInput) -> TermsResponse:
     
     return response
 
+
 # PDF를 입력으로 받는 API
 @router.post("/terms_analyze/pdf", response_model=TermsResponse)
 def analyze_from_pdf(file: UploadFile, 
