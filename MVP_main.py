@@ -8,12 +8,9 @@ from Complain_Email.routers import Complain_Email
 from Company_Terms_Analzye.routers import Company_Terms_Analzye
 from ResponseExcel.routers import MVPExcel
 from AdditionalNotes.routers import AdditionalNotes
-<<<<<<< Updated upstream
 from Improvement.routers import Improvement
 from CaseSearch.routers import CaseSearch
-=======
 from AdditionalNotes_Legacy.routers import AdditionalNotes_Legacy
->>>>>>> Stashed changes
 
 app = FastAPI()
 app.add_middleware(
@@ -34,15 +31,12 @@ app.include_router(Company_Terms_Analzye.router)
 app.include_router(MVPExcel.router)
 # 추가 행동 지침
 app.include_router(AdditionalNotes.router)
-<<<<<<< Updated upstream
 # 구체적인 약관 개선 사항
 app.include_router(Improvement.router)
 # 구글 검색 기능
 app.include_router(CaseSearch.router)
-=======
 # 추가행동 지침 legacy
 app.include_router(AdditionalNotes_Legacy.router)
->>>>>>> Stashed changes
 
 # FastAPI 구동시 RAG 셋업을 최초 1회 실행
 @app.on_event("startup")
