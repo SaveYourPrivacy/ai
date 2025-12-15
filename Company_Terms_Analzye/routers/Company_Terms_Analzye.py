@@ -1,6 +1,8 @@
 from fastapi import APIRouter,UploadFile,Form
 import pdfplumber
-from Company_Terms_Analzye.schemas.Company_dto import CompanyAnalysisResponse,CompanyAnalysisRequest
+import uuid
+from langchain.memory import ConversationBufferMemory
+from Company_Terms_Analzye.schemas.Company_dto import CompanyAnalysisResponse,CompanyAnalysisRequest,sessions
 from Company_Terms_Analzye.core.Company_chain import company_chain
 from Terms_Analyze.core.MVP_rag import get_retriever
 
@@ -37,7 +39,23 @@ def analyze_company( input: CompanyAnalysisRequest ) -> CompanyAnalysisResponse:
         "category": input.category,
         "law_context": law_context_text
     }
-    return company_chain.invoke(chain_input)
+
+    response = company_chain.invoke(chain_input)
+
+    session_id = str(uuid.uuid4())
+    memory = ConversationBufferMemory(return_messages=True)
+
+    memory.save_context(
+        {"input": f"이것은 방금 분석된 약관의 취약 조항들입니다. \n {response}"},
+        {"output": "네, 해당 정보를 바탕으로 요청사항을 도와드리겠습니다."}
+    )
+
+    sessions[session_id] = memory
+    response.session_id = session_id
+
+    print(memory)
+
+    return response
 
 
 # PDF 입력
@@ -63,4 +81,18 @@ def analyze_company_from_pdf ( file: UploadFile,
         "category": category,
         "law_context": law_context_text
     }
-    return company_chain.invoke(chain_input)
+    
+    response = company_chain.invoke(chain_input)
+
+    session_id = str(uuid.uuid4())
+    memory = ConversationBufferMemory(return_messages=True)
+
+    memory.save_context(
+        {"input": f"이것은 방금 분석된 약관의 불공정 조항들입니다. \n {response}"},
+        {"output": "네, 해당 정보를 바탕으로 요청사항을 도와드리겠습니다."}
+    )
+
+    sessions[session_id] = memory
+    response.session_id = session_id
+
+    return response
