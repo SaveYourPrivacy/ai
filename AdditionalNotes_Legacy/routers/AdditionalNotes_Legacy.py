@@ -1,4 +1,6 @@
+from typing import List
 from fastapi import APIRouter, HTTPException
+
 from AdditionalNotes_Legacy.core.AdditionalNotes_chain import generate_action_guidelines
 from AdditionalNotes_Legacy.schemas.AdditionalNotes_dto import (
     AdditionalNoteInput,
@@ -69,7 +71,6 @@ def get_action_guidelines_from_terms(body: NotesFromTermsRequest) -> SummaryResp
         )
     else:
         summary_text = (
-            f"[약관 분석 요약] {context_str}\n"
             f"구체적인 행동 지침을 생성하지 못했습니다. "
             f"추가 상황을 조금 더 자세히 설명해 주세요."
         )
