@@ -1,15 +1,28 @@
 from typing import List
-from fastapi import APIRouter
+from fastapi import APIRouter,UploadFile,Form
 import uuid
+import pdfplumber
 from langchain.memory import ConversationBufferMemory
-from Terms_Analyze.schemas.MVP_dto import TermInput, TermsResponse, UnfairClause
+from Terms_Analyze.schemas.MVP_dto import ActionGuideline, AdditionalNoteInput, TermInput, TermsResponse, UnfairClause
 from Terms_Analyze.core.MVP_rag import get_retriever
 from Terms_Analyze.core.MVP_chain import term_chain
 from Terms_Analyze.schemas.MVP_dto import sessions
 
+from AdditionalNotes.MVP_AdditionalNotes import generate_action_guidelines
+
 router = APIRouter(
     tags=["UnfairTerm Analysis"]
 )
+
+# PDF 텍스트 추출 함수
+def extract_pdf(pdf_file: UploadFile) -> str:
+    with pdfplumber.open(pdf_file.file) as pdf:
+        text = ""
+        for page in pdf.pages:
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted + "\n"
+        return text
 
 #-----[ FastAPI ]-----------------------
 @router.post("/terms_analyze", response_model=TermsResponse)
@@ -52,3 +65,50 @@ def analyze(input: TermInput) -> TermsResponse:
     response["session_id"] = session_id
     
     return response
+
+# PDF를 입력으로 받는 API
+@router.post("/terms_analyze/pdf", response_model=TermsResponse)
+def analyze_from_pdf(file: UploadFile, 
+                     category: str= Form(..., description="집중분석 카테고리") ) -> TermsResponse:
+    
+    # pdf에서 텍스트 추출
+    term_text = extract_pdf(file)
+    retriever = get_retriever(category)
+
+    if retriever is None:
+        print("경고: 검색기가 준비되지 않았습니다. RAG 없이 일반 분석을 수행합니다.")
+        law_context_text = "일반 상식 (법률 데이터 로드 실패)"
+    else:
+        law_context_docs = retriever.invoke(term_text)
+
+        law_context_text = "\n\n".join([doc.page_content for doc in law_context_docs])
+
+    chain_input = {
+        "term": term_text,       
+        "category": category,    
+        "law_context": law_context_text
+    }
+
+    session_id = str(uuid.uuid4())
+    memory = ConversationBufferMemory(return_messages=True)
+
+    response = term_chain.invoke(chain_input) 
+
+    memory.save_context(
+        {"input": f"이것은 방금 분석된 약관의 불공정 조항들입니다. \n {response}"},
+        {"output": "네, 해당 정보를 바탕으로 컴플레인 메일 작성을 도와드리겠습니다."}
+    )
+
+    sessions[session_id] = memory
+    response["session_id"] = session_id
+    
+    return response
+
+#추가 사항 입력시 행동 지침 출력
+@router.post("/MVP/Additional", response_model=List[ActionGuideline])
+def get_action_guidelines(
+    unfair_clauses: List[UnfairClause],  # 이전 분석 결과 일부 또는 전체 전달
+    additional_input: AdditionalNoteInput
+):
+    guidelines = generate_action_guidelines(unfair_clauses, additional_input)
+    return guidelines
