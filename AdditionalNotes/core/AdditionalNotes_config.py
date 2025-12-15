@@ -7,3 +7,14 @@ BASE_GUIDELINES: Dict[str, str] = {
     "면책 조항 과다": "면책 조항이 과도한 경우 공정거래위원회에 시정을 요구할 수 있습니다.",
     "개인정보 침해": "개인정보 보호위원회 등에 신고하고, 개인정보 보호 관련 법률을 확인하세요.",
 }
+
+MAIN_PROMPT = """
+## 이전 대화 이력
+{chat_history}
+
+상황: {situation}
+조항: {clause_number}
+
+이전 약관 분석과 대화 기록을 참고하여 구체적인 행동 지침을 제시하세요.
+{format_instructions}
+"""
