@@ -13,27 +13,20 @@ _llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
 def generate_action_guidelines(unfair_clauses, additional_input: AdditionalNoteInput):
-    base_guidelines_str = "" 
-
     json_format = """다음 JSON 형식으로 정확히 응답하세요:
 
 {{
   "guidelines": [
     {{
-      "recommendation": "구체적인 행동 지침",
-      "reason": "행동 이유 및 법적 근거",
-      "related_law": "관련 법률 조항"
+      "recommendation": "답변"
     }}
   ]
 }}
 
 2~4개의 행동 지침을 제시하세요."""
 
-    prompt_template = f"""불공정 약관 전문가로서, 주어진 분석 결과와 상황을 바탕으로
-사용자가 실제로 취할 수 있는 구체적인 행동 지침을 제시하세요.
-
-## 기본 행동 지침 참고
-{base_guidelines_str}
+    prompt_template = f"""법률 전문가로서, 주어진 분석 결과와 질문을 바탕으로
+사용자에게 전문적인 답변을 제시해주세요. 답변을 제시할 때에는 참고해야 할 법률 조항과 약관을 명시해서 작성해야만 합니다.
 
 ## 현재 상황
 {{situation}}
@@ -43,6 +36,20 @@ def generate_action_guidelines(unfair_clauses, additional_input: AdditionalNoteI
 {{unfair_clauses_text}}
 
 {json_format}
+
+## 답변 예시
+질문 1: "이용 약관의 불공정 조항 때문에 계약 해지를 원합니다. 어떻게 해야 하나요?"
+답변 1: {{{{"guidelines": [
+    {{{{
+      "recommendation": "계약 해지를 원하시면, 먼저 서비스 제공자에게 계약 해지 의사를 서면으로 통지하세요. 또한, 약관 제5조 3항에 따르면, 계약 해지 시점까지의 이용 요금을 정산해야 합니다. 만약 서비스 제공자가 부당하게 계약 해지를 거부할 경우, 공정거래위원회에 신고할 수 있습니다."
+    }}}}
+]]}}}}
+질문 2: "개인정보 보호를 위해 어떤 조치를 취해야 하나요?"
+답변 2: {{{{"guidelines": [
+    {{{{
+      "recommendation": "개인정보 보호를 위해서는 약관 제3조 5항을 근거로, 서비스 제공자에게 개인정보 수집 및 이용에 대한 명확한 동의를 요청하세요. 또한, 개인정보 유출 시 즉시 관련 기관에 신고하고, 개인정보 보호법에 따라 손해배상을 청구할 수 있습니다."
+    }}}}
+]]}}}}
 """
 
     prompt = PromptTemplate.from_template(prompt_template)
@@ -72,9 +79,7 @@ def generate_action_guidelines(unfair_clauses, additional_input: AdditionalNoteI
         guidelines_raw = data.get("guidelines", [])
         guidelines = [
             ActionGuideline(
-                recommendation=g.get("recommendation", "").strip(),
-                reason=g.get("reason", "").strip(),
-                related_law=g.get("related_law", "").strip(),
+                recommendation=g.get("recommendation", "").strip()
             )
             for g in guidelines_raw
         ]
@@ -83,9 +88,7 @@ def generate_action_guidelines(unfair_clauses, additional_input: AdditionalNoteI
     except Exception:
         guidelines = [
             ActionGuideline(
-                recommendation="공정거래위원회에 불공정 약관 신고를 검토하세요.",
-                reason="약관의 규제에 관한 법률에 따라 불공정 약관은 무효가 될 수 있으며, 시정 요청이 가능합니다.",
-                related_law="약관의 규제에 관한 법률 제6조, 제17조",
+                recommendation="공정거래위원회에 불공정 약관 신고를 검토하세요."
             )
         ]
 

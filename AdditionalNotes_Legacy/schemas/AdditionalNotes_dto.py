@@ -13,10 +13,9 @@ class AdditionalNoteInput(BaseModel):
 
 class ActionGuideline(BaseModel):
     recommendation: str = Field(description="권장 행동 지침")
-    reason: str = Field(description="행동 지침의 이유 또는 법적 근거 설명")
-    related_law: str = Field(description="참고할 법률 조항이나 판례")
 
 
+# Terms_Analyze 결과 구조
 class AnalysisIssue(BaseModel):
     type: str
     description: str
@@ -45,13 +44,23 @@ class TermsSummary(BaseModel):
     keyObligations: List[str]
 
 
-class NotesFromTermsRequest(BaseModel):
+class TermsAnalyzeResult(BaseModel):
+    """/terms_analyze 응답 그대로 (session_id 포함)"""
     summary: AnalysisSummary
     termsSummary: TermsSummary
     unfairClauses: List[UnfairClause]
     recommendations: List[str]
     session_id: str
-    question: str = Field(..., description="사용자 질문")
+
+
+class NotesFromTermsRequest(BaseModel):
+    """Terms_Analyze 결과 + 사용자 질문"""
+    summary: AnalysisSummary
+    termsSummary: TermsSummary
+    unfairClauses: List[UnfairClause]
+    recommendations: List[str]
+    session_id: str
+    question: str = Field(..., description="사용자 질문 (추가 행동 지침이 필요한 상황 설명)")
 
 
 class SummaryResponse(BaseModel):
