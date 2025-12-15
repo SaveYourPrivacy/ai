@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-#DuckDuckGo 무료 검색 (API 키 필요 없음!)
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -9,7 +8,6 @@ from langchain_core.output_parsers import JsonOutputParser
 from CaseSearch.schemas.CaseSearch_dto import CaseSearchResponse
 from CaseSearch.core.CaseSearch_config import CASESEARCH
 
-#무료 Google 검색 대체 (DuckDuckGo)
 search = DuckDuckGoSearchAPIWrapper()
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1).bind(
@@ -24,26 +22,24 @@ prompt = ChatPromptTemplate.from_template(
 
 case_chain = prompt | llm | parser
 
-def generate_cases(analysis_result: dict, question: str) -> CaseSearchResponse:
-    category = analysis_result.get("category", "B2C")
-    search_query = f'"{category}" 불공정 약관 피해 사례 판례 {question}'
+
+def generate_cases(worst_scenario: str) -> CaseSearchResponse:
+    # worst_scenario 내용을 일부 잘라서 검색 쿼리 생성
+    base = worst_scenario.replace("\n", " ")[:80]
+    search_query = f'"불공정 약관 피해 사례" {base}'
 
     try:
-        search_results = search.run(search_query)
+        # 문자열 말고 구조화된 결과 받기
+        results = search.results(search_query, max_results=5)
+        # results: [{'title': '...', 'snippet': '...', 'link': '...'}, ...]
     except Exception as e:
         print(f"검색 실패: {e}")
-        return CaseSearchResponse(
-            cases=[],
-            search_query=search_query,
-            total_results=0,
-        )
+        return CaseSearchResponse(cases=[])
 
+    # LLM에 넘길 때는 리스트 그대로 문자열화해서 전달
     result_dict = case_chain.invoke({
-        "search_results": search_results,
-        "analysis_result": analysis_result,
-        "question": question,
+        "search_results": results,
+        "worst_scenario": worst_scenario,
     })
 
-    response = CaseSearchResponse(**result_dict)
-
-    return response
+    return CaseSearchResponse(**result_dict)
