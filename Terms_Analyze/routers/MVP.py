@@ -3,12 +3,10 @@ from fastapi import APIRouter,UploadFile,Form
 import uuid
 import pdfplumber
 from langchain.memory import ConversationBufferMemory
-from Terms_Analyze.schemas.MVP_dto import ActionGuideline, AdditionalNoteInput, TermInput, TermsResponse, UnfairClause
+from Terms_Analyze.schemas.MVP_dto import TermInput, TermsResponse, UnfairClause
 from Terms_Analyze.core.MVP_rag import get_retriever
 from Terms_Analyze.core.MVP_chain import term_chain
 from Terms_Analyze.schemas.MVP_dto import sessions
-
-from AdditionalNotes.MVP_AdditionalNotes import generate_action_guidelines
 
 router = APIRouter(
     tags=["UnfairTerm Analysis"]
@@ -65,7 +63,6 @@ def analyze(input: TermInput) -> TermsResponse:
     response["session_id"] = session_id
     
     return response
-
 # PDF를 입력으로 받는 API
 @router.post("/terms_analyze/pdf", response_model=TermsResponse)
 def analyze_from_pdf(file: UploadFile, 
@@ -104,11 +101,3 @@ def analyze_from_pdf(file: UploadFile,
     
     return response
 
-#추가 사항 입력시 행동 지침 출력
-@router.post("/MVP/Additional", response_model=List[ActionGuideline])
-def get_action_guidelines(
-    unfair_clauses: List[UnfairClause],  # 이전 분석 결과 일부 또는 전체 전달
-    additional_input: AdditionalNoteInput
-):
-    guidelines = generate_action_guidelines(unfair_clauses, additional_input)
-    return guidelines
