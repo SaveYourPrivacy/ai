@@ -65,11 +65,7 @@ def get_action_guidelines_from_terms(body: NotesFromTermsRequest) -> SummaryResp
     if guidelines:
         primary = guidelines[0]
         summary_text = (
-            f"분석 결과, 다음과 같은 불공정 조항이 확인되었습니다.\n"
-            f"{clause_lines[0] if clause_lines else ''}\n\n"
-            f"행동 지침: {primary.recommendation}\n"
-            f"이유: {primary.reason}\n"
-            f"법적 근거: {primary.related_law}"
+            f"{primary.recommendation}\n"
         )
     else:
         summary_text = (

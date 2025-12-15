@@ -13,8 +13,6 @@ class AdditionalNoteInput(BaseModel):
 
 class ActionGuideline(BaseModel):
     recommendation: str = Field(description="권장 행동 지침")
-    reason: str = Field(description="행동 지침의 이유 또는 법적 근거 설명")
-    related_law: str = Field(description="참고할 법률 조항이나 판례")
 
 
 # Terms_Analyze 결과 구조
