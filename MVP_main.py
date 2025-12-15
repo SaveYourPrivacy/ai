@@ -9,6 +9,7 @@ from Company_Terms_Analzye.routers import Company_Terms_Analzye
 from ResponseExcel.routers import MVPExcel
 from AdditionalNotes.routers import AdditionalNotes
 from Improvement.routers import Improvement
+from CaseSearch.routers import CaseSearch
 
 app = FastAPI()
 app.add_middleware(
@@ -31,6 +32,8 @@ app.include_router(MVPExcel.router)
 app.include_router(AdditionalNotes.router)
 # 구체적인 약관 개선 사항
 app.include_router(Improvement.router)
+# 구글 검색 기능
+app.include_router(CaseSearch.router)
 
 # FastAPI 구동시 RAG 셋업을 최초 1회 실행
 @app.on_event("startup")
