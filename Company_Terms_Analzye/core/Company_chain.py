@@ -1,4 +1,4 @@
-from Company_Terms_Analzye.schemas.Company_dto import CompanyAnalysisResponse, LegalVulnerability, InterAnalysis
+from Company_Terms_Analzye.schemas.Company_dto import CompanyAnalysisResponse, InterAnalysis
 from Company_Terms_Analzye.core.Company_config import PROMPT_COMPANY_TEXT, PROMPT_WORST_SCENARIO
 
 #-------[LangChain Core]--------------------
@@ -57,9 +57,10 @@ def combine(input: dict) -> CompanyAnalysisResponse:
     scenario = input["scenario"]
 
     return CompanyAnalysisResponse(
-        riskLevel=analyze["riskLevel"],
         summary=analyze["summary"],
+        termsSummary=analyze["termsSummary"],
         vulnerabilities=analyze["vulnerabilities"],
+        recommendations=analyze["recommendations"],
         worstScenario=scenario
     )
 
