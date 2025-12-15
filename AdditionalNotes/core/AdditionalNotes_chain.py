@@ -56,7 +56,7 @@ def generate_action_guidelines(
             ])
             print(f"📝 이전 대화 ({len(messages)}개):\n{chat_history_str[:150]}...")
     except Exception as e:
-        print(f"⚠️ 대화 로드 실패: {e}")
+        print(f"대화 로드 실패: {e}")
     
     # BASE_GUIDELINES 통합
     base_guidelines_str = "\n".join([f"• {k}: {v}" for k, v in BASE_GUIDELINES.items()])
@@ -78,21 +78,18 @@ def generate_action_guidelines(
 2~4개의 행동 지침을 제시하세요."""
     
     # 2. PromptTemplate 사용 (변수 문제 완전 해결)
-    prompt_template = f"""당신은 불공정 약관 전문 컨설턴트입니다.
+    prompt_template = f"""불공정 약관 전문가로서, 주어진 세션 컨텍스트를 분석하여 실질적 행동 지침을 제시하세요.
 
-## 기본 행동 지침 참고
-{base_guidelines_str}
-
-## 이전 약관 분석 및 대화 기록
+## 세션 분석 근거
 {chat_history_str}
 
 ## 현재 상황
-상황: {additional_input.situation}
-대상 조항: {additional_input.clause_number or '없음'}
-불공정 조항 수: {len(unfair_clauses)}개
-불공정 조항 내용: {{unfair_clauses}}
+{additional_input.situation}
 
-위 정보를 바탕으로 구체적이고 실질적인 행동 지침을 제시하세요.
+## 불공정 조항
+불공정 조항 수: {len(unfair_clauses)}개
+
+**중요**: 세션 컨텍스트를 참고하여 다음 단계의 구체적 행동을 제시하세요.
 
 {json_format}"""
 
@@ -143,13 +140,12 @@ def generate_action_guidelines(
             {"output": f"[{', '.join(guideline_texts)}]"}
         )
     except Exception as e:
-        print(f"⚠️ 메모리 저장 실패: {e}")
+        print(f"메모리 저장 실패: {e}")
     
     print(f"행동 지침 {len(result.guidelines)}개 생성!")
     return result.guidelines
 
 def _get_extractor_chain():
-    """질문 파싱 (수정)"""
     prompt_template = """사용자의 질문에서 다음 정보를 추출하여 JSON으로 응답하세요:
 
 {{

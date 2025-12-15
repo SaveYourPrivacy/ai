@@ -1,5 +1,4 @@
 from typing import List, Optional
-
 from pydantic import BaseModel, Field
 
 
@@ -17,12 +16,16 @@ class ActionGuideline(BaseModel):
     reason: str = Field(description="행동 지침의 이유 또는 법적 근거 설명")
     related_law: str = Field(description="참고할 법률 조항이나 판례")
 
+
+
+
 class ActionGuidelineResponse(BaseModel):
     """LLM이 반환하는 최종 응답 (리스트 감싸기)"""
     guidelines: List[ActionGuideline] = Field(description="행동 지침 리스트")
     session_id: str = Field(description="세션 ID")
 
-# 새로운 분석 결과 구조에 맞는 DTO
+
+# 아래는 Terms_Analyze 결과 구조 (그대로 사용)
 class AnalysisIssue(BaseModel):
     type: str
     description: str
@@ -60,3 +63,12 @@ class NewAnalysisResult(BaseModel):
 
 class QuestionPayload(BaseModel):
     question: str
+
+
+class AdditionalNotesRequest(BaseModel):
+    session_id: str = Field(..., description="Terms_Analyze에서 받은 session_id")
+    question: str = Field(..., description="사용자 질문")
+    analysis_result: Optional[NewAnalysisResult] = Field(
+        default=None,
+        description="Terms_Analyze에서 받은 약관 분석 결과 전체"
+    )
