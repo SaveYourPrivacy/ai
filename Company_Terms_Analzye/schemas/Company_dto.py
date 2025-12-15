@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
+from langchain.memory import ConversationBufferMemory
 
 # 기업용 약관 취약점 분석 DTO
 
@@ -59,7 +60,8 @@ class CompanyAnalysisResponse(BaseModel):
     termsSummary: CompanyTermsSummary = Field(description="약관 상세 내용 요약 (주요점, 권한, 의무)")
     vulnerabilities: List[VulnerableClause] = Field(description="발견된 법적 취약점 조항 목록") 
     recommendations: List[str] = Field(description="기업에게 제안하는 리스크 제거를 위한 구체적인 수정 제안 리스트")
-    worstScenario: str = Field(description="발견된 모든 취약점이 악용되었을 때 발생할 수 있는 종합적이고 구체적인 최악의 사태 (단일 시나리오)") # session_id 대응
+    worstScenario: str = Field(description="발견된 모든 취약점이 악용되었을 때 발생할 수 있는 종합적이고 구체적인 최악의 사태 (단일 시나리오)") # 멀티체인 항목
+    session_id: Optional[str] = None
 
 # [멀티 체인용 중간 DTO] =========================================================
 # worstScenario 생성을 위해 먼저 추출할 데이터 구조
@@ -68,3 +70,7 @@ class InterAnalysis(BaseModel):
     termsSummary: CompanyTermsSummary
     vulnerabilities: List[VulnerableClause]
     recommendations: List[str]
+
+#-------[ Session DTO ]--------------------------------------
+# 출력결과 메모리 저장용 세션 Dto
+sessions: Dict[str, ConversationBufferMemory] = {}
