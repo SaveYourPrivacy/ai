@@ -4,10 +4,6 @@ from pydantic import BaseModel, Field
 
 class AdditionalNoteInput(BaseModel):
     situation: str = Field(description="추가 상황 설명 (예: '계약 해지 요청')")
-    clause_number: Optional[str] = Field(
-        default=None,
-        description="관련 약관 조항 번호(Optional)",
-    )
     session_id: Optional[str] = Field(None, description="세션 ID (옵션)")
 
 
@@ -54,12 +50,8 @@ class TermsAnalyzeResult(BaseModel):
 
 
 class NotesFromTermsRequest(BaseModel):
-    """Terms_Analyze 결과 + 사용자 질문"""
-    summary: AnalysisSummary
-    termsSummary: TermsSummary
-    unfairClauses: List[UnfairClause]
-    recommendations: List[str]
-    session_id: str
+    """세션 ID + 사용자 질문"""
+    session_id: str = Field(..., description="세션 ID")
     question: str = Field(..., description="사용자 질문 (추가 행동 지침이 필요한 상황 설명)")
 
 

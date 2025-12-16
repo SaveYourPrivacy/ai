@@ -12,7 +12,7 @@ from AdditionalNotes_Legacy.schemas.AdditionalNotes_dto import (
 _llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
-def generate_action_guidelines(unfair_clauses, additional_input: AdditionalNoteInput):
+def generate_action_guidelines(analysis_result, additional_input: AdditionalNoteInput):
     json_format = """다음 JSON 형식으로 정확히 응답하세요:
 
 {{
@@ -22,18 +22,17 @@ def generate_action_guidelines(unfair_clauses, additional_input: AdditionalNoteI
     }}
   ]
 }}
+"""
 
-2~4개의 행동 지침을 제시하세요."""
+    prompt_template = f"""법률 전문가로서, 주어진 약관 분석 결과와 질문을 바탕으로
+사용자에게 전문적인 답변을 제시해주세요. 답변을 제시할 때에는 참고해야 할 법률 조항과 약관을 구체적으로 명시해서 작성해야만 합니다.
+답변을 위해 사용한 조항을 상세하게 설명해야 하며, 법적 근거를 반드시 포함해야 합니다.
 
-    prompt_template = f"""법률 전문가로서, 주어진 분석 결과와 질문을 바탕으로
-사용자에게 전문적인 답변을 제시해주세요. 답변을 제시할 때에는 참고해야 할 법률 조항과 약관을 명시해서 작성해야만 합니다.
-
-## 현재 상황
+## 사용자 질문 및 상황
 {{situation}}
 
-## 불공정 조항 요약
-- 총 {{unfair_count}}개 불공정 조항
-{{unfair_clauses_text}}
+## 약관 분석 결과
+{{analysis_result}}
 
 {json_format}
 
@@ -54,20 +53,21 @@ def generate_action_guidelines(unfair_clauses, additional_input: AdditionalNoteI
 
     prompt = PromptTemplate.from_template(prompt_template)
 
-    unfair_clauses_text = "\n".join(
-        [
-            f"- {c.get('clauseNumber', '')}: {c.get('text', '')[:100]}..."
-            for c in unfair_clauses
-        ]
-    )
+    # analysis_result를 JSON 문자열로 변환
+    import json
+    if isinstance(analysis_result, dict):
+        analysis_result_str = json.dumps(analysis_result, ensure_ascii=False, indent=2)
+    elif isinstance(analysis_result, list):
+        analysis_result_str = json.dumps(analysis_result, ensure_ascii=False, indent=2)
+    else:
+        analysis_result_str = str(analysis_result)
 
     chain = prompt | _llm
 
     result_text = chain.invoke(
         {
             "situation": additional_input.situation,
-            "unfair_count": len(unfair_clauses),
-            "unfair_clauses_text": unfair_clauses_text,
+            "analysis_result": analysis_result_str,
         }
     ).content
 
