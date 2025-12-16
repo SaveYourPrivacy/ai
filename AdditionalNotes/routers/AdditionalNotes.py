@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 import ast
 
-from Terms_Analyze.schemas.MVP_dto import sessions
+from Terms_Analyze.schemas.MVP_dto import sessions as user_sessions
+from Company_Terms_Analzye.schemas.Company_dto import sessions as company_sessions
 from AdditionalNotes.core.AdditionalNotes_chain import generate_action_guidelines
 from AdditionalNotes.schemas.AdditionalNotes_dto import (
     AdditionalNoteInput,
@@ -9,13 +10,18 @@ from AdditionalNotes.schemas.AdditionalNotes_dto import (
     SummaryResponse,
 )
 
-router = APIRouter(tags=["AdditionalNotes_Legacy"])
+router = APIRouter(tags=["AdditionalNotes"])
 
 
-@router.post("/AdditionalNotes_Legacy", response_model=SummaryResponse)
+@router.post("/AdditionalNotes", response_model=SummaryResponse)
 def get_action_guidelines_from_terms(request: NotesFromTermsRequest) -> SummaryResponse:
-    # 세션에 저장된 메모리 불러오기
-    memory = sessions[request.session_id]
+    memory = None
+    if request.session_id in user_sessions:
+        memory = user_sessions[request.session_id]
+    elif request.session_id in company_sessions:
+        memory = company_sessions[request.session_id]
+    else:
+        raise ValueError(f"세션 ID를 찾을 수 없습니다: {request.session_id}")
 
     # 메모리의 첫 번째 입력 메시지에서 약관 분석 결과 추출
     messages = memory.chat_memory.messages
