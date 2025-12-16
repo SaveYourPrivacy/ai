@@ -10,7 +10,6 @@ from ResponseExcel.routers import MVPExcel
 from AdditionalNotes.routers import AdditionalNotes
 from Improvement.routers import Improvement
 from CaseSearch.routers import CaseSearch
-from AdditionalNotes_Legacy.routers import AdditionalNotes_Legacy
 
 app = FastAPI()
 app.add_middleware(
@@ -35,8 +34,6 @@ app.include_router(AdditionalNotes.router)
 app.include_router(Improvement.router)
 # 구글 검색 기능
 app.include_router(CaseSearch.router)
-# 추가행동 지침 legacy
-app.include_router(AdditionalNotes_Legacy.router)
 
 # FastAPI 구동시 RAG 셋업을 최초 1회 실행
 @app.on_event("startup")

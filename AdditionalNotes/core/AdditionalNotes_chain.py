@@ -1,196 +1,95 @@
-from typing import List, Dict, Any, Optional
-from threading import local
-from langchain.memory import ConversationBufferMemory
+from typing import List, Dict, Any
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
+
 from AdditionalNotes.core.AdditionalNotes_config import BASE_GUIDELINES
 from AdditionalNotes.schemas.AdditionalNotes_dto import (
     AdditionalNoteInput,
     ActionGuideline,
-    ActionGuidelineResponse
 )
 
-# Thread-safe 세션 저장소
-_sessions_container = local()
-
-def _get_sessions() -> Dict[str, ConversationBufferMemory]:
-    if not hasattr(_sessions_container, 'sessions'):
-        _sessions_container.sessions = {}
-    return _sessions_container.sessions
-
-def get_session_memory(session_id: str):
-    """Thread-safe 세션 메모리 관리"""
-    sessions = _get_sessions()
-    if session_id not in sessions:
-        print(f"새 세션 생성: {session_id}")
-        sessions[session_id] = ConversationBufferMemory(
-            return_messages=True,
-            memory_key="history"
-        )
-    else:
-        print(f"기존 세션 로드: {session_id}")
-    return sessions[session_id]
 
 _llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-def generate_action_guidelines(
-    unfair_clauses: List[Dict[str, Any]],
-    additional_input: AdditionalNoteInput,
-) -> List[ActionGuideline]:
-    """완전 수정: PromptTemplate + 수동 파싱"""
-    
-    memory = get_session_memory(additional_input.session_id)
-    
-    # 안전한 chat_history 변환
-    chat_history_str = "이전 대화 없음"
-    try:
-        memory_vars = memory.load_memory_variables({})
-        messages = memory_vars.get("history", [])
-        if messages:
-            chat_history_str = "\n".join([
-                f"사용자: {getattr(msg, 'content', str(msg))[:200]}" 
-                if "human" in str(msg).lower() 
-                else f"AI: {getattr(msg, 'content', str(msg))[:200]}"
-                for msg in messages[-4:]
-            ])
-            print(f"📝 이전 대화 ({len(messages)}개):\n{chat_history_str[:150]}...")
-    except Exception as e:
-        print(f"⚠️ 대화 로드 실패: {e}")
-    
-    # BASE_GUIDELINES 통합
-    base_guidelines_str = "\n".join([f"• {k}: {v}" for k, v in BASE_GUIDELINES.items()])
-    
-    # 1. 수동 JSON 형식 지시사항 (PydanticOutputParser 제거)
+
+def generate_action_guidelines(analysis_result, additional_input: AdditionalNoteInput):
     json_format = """다음 JSON 형식으로 정확히 응답하세요:
 
 {{
   "guidelines": [
     {{
-      "recommendation": "구체적인 행동 지침",
-      "reason": "행동 이유 및 법적 근거", 
-      "related_law": "관련 법률 조항"
+      "recommendation": "답변"
     }}
-  ],
-  "session_id": "세션ID"
+  ]
 }}
+"""
 
-2~4개의 행동 지침을 제시하세요."""
-    
-    # 2. PromptTemplate 사용 (변수 문제 완전 해결)
-    prompt_template = f"""당신은 불공정 약관 전문 컨설턴트입니다.
+    prompt_template = f"""법률 전문가로서, 주어진 약관 분석 결과와 질문을 바탕으로
+사용자에게 전문적인 답변을 제시해주세요. 답변을 제시할 때에는 참고해야 할 법률 조항과 약관을 구체적으로 명시해서 작성해야만 합니다.
+답변을 위해 사용한 조항을 상세하게 설명해야 하며, 법적 근거를 반드시 포함해야 합니다.
 
-## 기본 행동 지침 참고
-{base_guidelines_str}
+## 사용자 질문 및 상황
+{{situation}}
 
-## 이전 약관 분석 및 대화 기록
-{chat_history_str}
+## 약관 분석 결과
+{{analysis_result}}
 
-## 현재 상황
-상황: {additional_input.situation}
-대상 조항: {additional_input.clause_number or '없음'}
-불공정 조항 수: {len(unfair_clauses)}개
-불공정 조항 내용: {{unfair_clauses}}
+{json_format}
 
-위 정보를 바탕으로 구체적이고 실질적인 행동 지침을 제시하세요.
-
-{json_format}"""
+## 답변 예시
+질문 1: "이용 약관의 불공정 조항 때문에 계약 해지를 원합니다. 어떻게 해야 하나요?"
+답변 1: {{{{"guidelines": [
+    {{{{
+      "recommendation": "계약 해지를 원하시면, 먼저 서비스 제공자에게 계약 해지 의사를 서면으로 통지하세요. 또한, 약관 제5조 3항에 따르면, 계약 해지 시점까지의 이용 요금을 정산해야 합니다. 만약 서비스 제공자가 부당하게 계약 해지를 거부할 경우, 공정거래위원회에 신고할 수 있습니다."
+    }}}}
+]]}}}}
+질문 2: "개인정보 보호를 위해 어떤 조치를 취해야 하나요?"
+답변 2: {{{{"guidelines": [
+    {{{{
+      "recommendation": "개인정보 보호를 위해서는 약관 제3조 5항을 근거로, 서비스 제공자에게 개인정보 수집 및 이용에 대한 명확한 동의를 요청하세요. 또한, 개인정보 유출 시 즉시 관련 기관에 신고하고, 개인정보 보호법에 따라 손해배상을 청구할 수 있습니다."
+    }}}}
+]]}}}}
+"""
 
     prompt = PromptTemplate.from_template(prompt_template)
-    
-    # LLM에 직접 프롬프트 전달 + JSON 강제
+
+    # analysis_result를 JSON 문자열로 변환
+    import json
+    if isinstance(analysis_result, dict):
+        analysis_result_str = json.dumps(analysis_result, ensure_ascii=False, indent=2)
+    elif isinstance(analysis_result, list):
+        analysis_result_str = json.dumps(analysis_result, ensure_ascii=False, indent=2)
+    else:
+        analysis_result_str = str(analysis_result)
+
     chain = prompt | _llm
-    
-    # 3. 실제 데이터 포함하여 invoke
-    result_text = chain.invoke({
-        "unfair_clauses": "\n".join([f"- {c['clauseNumber']}: {c['text'][:100]}..." for c in unfair_clauses])
-    }).content
-    
-    print(f"LLM 원본 응답: {result_text[:200]}...")
-    
-    # 4. 수동 JSON 파싱 (안전성 최우선)
+
+    result_text = chain.invoke(
+        {
+            "situation": additional_input.situation,
+            "analysis_result": analysis_result_str,
+        }
+    ).content
+
+    import json
     try:
-        import json
-        # JSON만 추출
-        start_idx = result_text.find('{')
-        end_idx = result_text.rfind('}') + 1
-        json_str = result_text[start_idx:end_idx]
-        result_dict = json.loads(json_str)
-        
-        # Pydantic 검증
-        result = ActionGuidelineResponse.model_validate(result_dict)
-        
-    except Exception as e:
-        print(f"JSON 파싱 실패: {e}")
-        print("기본 응답으로 대체")
-        # 기본 응답
-        result = ActionGuidelineResponse(
-            guidelines=[
-                ActionGuideline(
-                    recommendation="공정거래위원회에 불공정 약관 신고",
-                    reason="불공정 약관 규제법 위반 가능성",
-                    related_law="약관의 규제에 관한 법률 제6조"
-                )
-            ],
-            session_id=additional_input.session_id or ""
-        )
-    
-    # 메모리 저장
-    try:
-        guideline_texts = [g.recommendation[:30] for g in result.guidelines]
-        memory.save_context(
-            {"input": additional_input.situation},
-            {"output": f"[{', '.join(guideline_texts)}]"}
-        )
-    except Exception as e:
-        print(f"⚠️ 메모리 저장 실패: {e}")
-    
-    print(f"행동 지침 {len(result.guidelines)}개 생성!")
-    return result.guidelines
-
-def _get_extractor_chain():
-    """질문 파싱 (수정)"""
-    prompt_template = """사용자의 질문에서 다음 정보를 추출하여 JSON으로 응답하세요:
-
-{{
-  "situation": "사용자 상황 (필수)",
-  "clause_number": "조항 번호 (없으면 null)"
-}}
-
-질문: {question}"""
-
-    prompt = PromptTemplate.from_template(prompt_template)
-    chain = prompt | _llm
-    
-    def parse_with_chain(question: str) -> AdditionalNoteInput:
-        try:
-            result_text = chain.invoke({"question": question}).content
-            import json
-            start = result_text.find('{')
-            end = result_text.rfind('}') + 1
-            data = json.loads(result_text[start:end])
-            data["session_id"] = None
-            return AdditionalNoteInput.model_validate(data)
-        except:
-            return AdditionalNoteInput(
-                situation=question[:50] + "..." if len(question) > 50 else question,
-                clause_number=None,
-                session_id=None
+        start = result_text.find("{")
+        end = result_text.rfind("}") + 1
+        data = json.loads(result_text[start:end])
+        guidelines_raw = data.get("guidelines", [])
+        guidelines = [
+            ActionGuideline(
+                recommendation=g.get("recommendation", "").strip()
             )
-    return parse_with_chain
+            for g in guidelines_raw
+        ]
+        if not guidelines:
+            raise ValueError("empty guidelines")
+    except Exception:
+        guidelines = [
+            ActionGuideline(
+                recommendation="공정거래위원회에 불공정 약관 신고를 검토하세요."
+            )
+        ]
 
-# 전역 체인 (한번만 생성)
-_parse_chain = _get_extractor_chain()
-
-def parse_question_to_additional_input(question: str) -> AdditionalNoteInput:
-    try:
-        result = _parse_chain(question)
-        print(f"질문 파싱 성공: {result.situation}")
-        return result
-    except Exception as e:
-        print(f"[ERROR] Question parsing failed: {e}")
-        return AdditionalNoteInput(
-            situation=question[:50] + "..." if len(question) > 50 else question,
-            clause_number=None,
-            session_id=None
-        )
+    return guidelines

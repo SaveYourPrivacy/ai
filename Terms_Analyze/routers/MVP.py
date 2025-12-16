@@ -8,8 +8,6 @@ from Terms_Analyze.core.MVP_rag import get_retriever
 from Terms_Analyze.core.MVP_chain import term_chain
 from Terms_Analyze.schemas.MVP_dto import sessions
 
-from AdditionalNotes.MVP_AdditionalNotes import generate_action_guidelines
-
 router = APIRouter(
     tags=["UnfairTerm Analysis"]
 )
