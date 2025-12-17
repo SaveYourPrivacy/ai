@@ -53,8 +53,6 @@ def analyze_company( input: CompanyAnalysisRequest ) -> CompanyAnalysisResponse:
     sessions[session_id] = memory
     response.session_id = session_id
 
-    print(memory)
-
     return response
 
 
