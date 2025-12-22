@@ -32,91 +32,78 @@
 
 
 # 전체 구조
+```text
 src/
-├── AdditionalNotes/                  # 추가 행동 지침 제안 기능 API
-│   ├── core/                         # 기능 핵심 코드 패키지
+├── AdditionalNotes/               # 추가 행동 지침 제안 기능 API
+│   ├── core/                      # 기능 핵심 코드 패키지
 │   │   ├── AdditionalNotes_chain.py  # 추가 행동 지침 생성 LangChain 코드
 │   │   └── AdditionalNotes_config.py # LLM 프롬프트
-│   │
-│   ├── routers/                      # 추가 행동지침 제안 기능 API 처리 패키지
+│   ├── routers/                   # 추가 행동지침 제안 기능 API 처리 패키지
 │   │   └── AdditionalNotes.py        # API 처리 FastAPI 기반 코드
-│   │
-│   └── schemas/                      # DTO 패키지
+│   └── schemas/                   # DTO 패키지
 │       └── AdditionalNotes_dto.py    # 추가 행동 지침 제안 기능 Req&Res DTO 코드
 │
-├── CaseSearch/                  # 실제 피해사례 검색 기능 API
-│   ├── core/                    # 기능 핵심 코드 패키지
-│   │   ├── CaseSearch_chain.py  # 실제 피해사례 검색 기능 LangChain 코드
-│   │   └── CaseSearch_config.py # LLM 프롬프트
-│   │
-│   ├── routers/                 # API 처리 패키지
-│   │   └── CaseSearch.py        # API 처리 FastAPI 기반 코드
-│   │
-│   └── schemas/                 # DTO 패키지
-│       └── CaseSearch_dto.py    # API Req&Res DTO 코드
+├── CaseSearch/                    # 실제 피해사례 검색 기능 API
+│   ├── core/                      # 기능 핵심 코드 패키지
+│   │   ├── CaseSearch_chain.py       # 실제 피해사례 검색 기능 LangChain 코드
+│   │   └── CaseSearch_config.py      # LLM 프롬프트
+│   ├── routers/                   # API 처리 패키지
+│   │   └── CaseSearch.py             # API 처리 FastAPI 기반 코드
+│   └── schemas/                   # DTO 패키지
+│       └── CaseSearch_dto.py         # API Req&Res DTO 코드
 │
-├── Company_Terms_Analzye/              # 기업용 약관 취약점 분석 기능 API
-│   ├── core/                           # 기능 핵심 코드 패키지
-│   │   ├── Company_chain.py            # 취약점 분석 LangChain 코드
-│   │   └── Company_config.py           # 취약점 분석 프롬프트
-│   │
-│   ├── routers/                        # 취약점 분석 API 처리 패키지
-│   │   └── Company_Terms_Analzye.py    # API 처리 FastAPI 기반 코드
-│   │
-│   └── schemas/                        # DTO 패키지
-│       └── Company_DTO.py              # 취약점 분석 기능 Req&Res DTO 코드
+├── Company_Terms_Analzye/         # 기업용 약관 취약점 분석 기능 API
+│   ├── core/                      # 기능 핵심 코드 패키지
+│   │   ├── Company_chain.py          # 취약점 분석 LangChain 코드
+│   │   └── Company_config.py         # 취약점 분석 프롬프트
+│   ├── routers/                   # 취약점 분석 API 처리 패키지
+│   │   └── Company_Terms_Analzye.py  # API 처리 FastAPI 기반 코드
+│   └── schemas/                   # DTO 패키지
+│       └── Company_DTO.py            # 취약점 분석 기능 Req&Res DTO 코드
 │
-├── Complain_Email/           # 컴플레인 메일 작성 기능 API
-│   ├── core/                 # 기능 핵심 코드 패키지
-│   │   ├── Email_chain.py    # 컴플레인 메일 생성 LangChain 코드
-│   │   └── Email_config.py   # 컴플레인 메일 생성 프롬프트
-│   │
-│   ├── routers/              # 취약점 분석 API 처리 패키지
-│   │   └── Complain_Email.py # API 처리 FastAPI 기반 코드
-│   │
-│   └── schemas/              # DTO 패키지
-│       └── Email_dto.py      # 컴플레인 메일생성 기능 Req&Res DTO 코드
+├── Complain_Email/                # 컴플레인 메일 작성 기능 API
+│   ├── core/                      # 기능 핵심 코드 패키지
+│   │   ├── Email_chain.py            # 컴플레인 메일 생성 LangChain 코드
+│   │   └── Email_config.py           # 컴플레인 메일 생성 프롬프트
+│   ├── routers/                   # 취약점 분석 API 처리 패키지
+│   │   └── Complain_Email.py         # API 처리 FastAPI 기반 코드
+│   └── schemas/                   # DTO 패키지
+│       └── Email_dto.py              # 컴플레인 메일생성 기능 Req&Res DTO 코드
 │
-├── Improvement/                  # 약관 개선사항 제안 기능 API
-│   ├── core/                     # 기능 핵심 코드 패키지
-│   │   ├── Improvement_chain.py  # 약관 개선사항 제안 기능 LangChain 코드
-│   │   └── Improvement_config.py # LLM 프롬프트
-│   │
-│   ├── routers/                  # API 처리 패키지
-│   │   └── Improvement_Email.py  # API 처리 FastAPI 기반 코드
-│   │
-│   └── schemas/                  # DTO 패키지
-│       └── Improvement_dto.py    # API Req&Res DTO 코드
+├── Improvement/                   # 약관 개선사항 제안 기능 API
+│   ├── core/                      # 기능 핵심 코드 패키지
+│   │   ├── Improvement_chain.py      # 약관 개선사항 제안 기능 LangChain 코드
+│   │   └── Improvement_config.py     # LLM 프롬프트
+│   ├── routers/                   # API 처리 패키지
+│   │   └── Improvement_Email.py      # API 처리 FastAPI 기반 코드
+│   └── schemas/                   # DTO 패키지
+│       └── Improvement_dto.py        # API Req&Res DTO 코드
 │
-├── ResponseExcel/            # 약관 분석 결과 엑셀 반환 기능 (프론트 미구현...)
-│   ├── core/                 # 기능 핵심 코드 패키지
-│   │   └── makeExcel.py      # 분석 결과 엑셀 작성 코드
-│   │
-│   └── routers/              # 분석 결과 엑셀 반환 API 처리 패키지
-│       └── MVPExcel.py       # API 처리 FastAPI 기반 코드
+├── ResponseExcel/                 # 약관 분석 결과 엑셀 반환 기능 (프론트 미구현...)
+│   ├── core/                      # 기능 핵심 코드 패키지
+│   │   └── makeExcel.py              # 분석 결과 엑셀 작성 코드
+│   └── routers/                   # 분석 결과 엑셀 반환 API 처리 패키지
+│       └── MVPExcel.py               # API 처리 FastAPI 기반 코드
 │
-├── Terms_Analyze/           # 소비자용 불공정 약관 분석 기능 API
-│   ├── core/                # 기능 핵심 코드 패키지
-│   │   ├── MVP_chain.py     # 불공정 약관 분석 기능 LangChain 코드
-│   │   ├── MVP_config.py    # LLM 프롬프트
-│   │   └── MVP_rag.py       # 약관분석의 기반자료가 될 Vector DB 임베딩 코드
-│   │
-│   ├── data/                # 임베딩 될 기반 법률 자료 패키지
-│   │   ├── advertisement.txt     # 광고 관련 법률
-│   │   ├── auto_payment.txt      # 자동결제 관련 법률
-│   │   ├── LAW_TEXT.py           # 약관작성 관련 법률 (이전 버전활용/현재 활용 X)
-│   │   ├── liability.txt         # 책임제한 관련 법률
-│   │   ├── privacy.txt           # 개인정보 관련 법률
-│   │   └── refund.txt            # 환불 관련 법률
-│   │
-│   ├── routers/              # API 처리 패키지
-│   │   └── MVP.py            # API 처리 FastAPI 기반 코드
-│   │
-│   └── schemas/              # DTO 패키지
-│       └── MVP_dto.py        # API의 Req&Res DTO 코드
+├── Terms_Analyze/                 # 소비자용 불공정 약관 분석 기능 API
+│   ├── core/                      # 기능 핵심 코드 패키지
+│   │   ├── MVP_chain.py              # 불공정 약관 분석 기능 LangChain 코드
+│   │   ├── MVP_config.py             # LLM 프롬프트
+│   │   └── MVP_rag.py                # 약관분석의 기반자료가 될 Vector DB 임베딩 코드
+│   ├── data/                      # 임베딩 될 기반 법률 자료 패키지
+│   │   ├── advertisement.txt         # 광고 관련 법률
+│   │   ├── auto_payment.txt          # 자동결제 관련 법률
+│   │   ├── LAW_TEXT.py               # 약관작성 관련 법률 (이전 버전활용/현재 활용 X)
+│   │   ├── liability.txt             # 책임제한 관련 법률
+│   │   ├── privacy.txt               # 개인정보 관련 법률
+│   │   └── refund.txt                # 환불 관련 법률
+│   ├── routers/                   # API 처리 패키지
+│   │   └── MVP.py                    # API 처리 FastAPI 기반 코드
+│   └── schemas/                   # DTO 패키지
+│       └── MVP_dto.py                # API의 Req&Res DTO 코드
 │
-├── MVP_backup.py              # 앱 초기버전 백업 코드(현재 활용 X)
-└── MVP_main.py                # 백엔드 실행 (라우터 통합 코드)
+├── MVP_backup.py                  # 앱 초기버전 백업 코드(현재 활용 X)
+└── MVP_main.py                    # 백엔드 실행 (라우터 통합 코드)
 
 
 # 기술 스택
