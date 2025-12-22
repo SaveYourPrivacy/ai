@@ -7,74 +7,73 @@ src/
 ├── AdditonalNotes/
 │   ├── core/
 │   |  ├── AdditonalNotes_chain.py
-│   |  ├── AdditonalNotes_config.py
+│   |  └── AdditonalNotes_config.py
 │   ├── routers/
-│   |  ├── AdditonalNotes.py
-│   ├── schemas/
-│   |  ├── AdditonalNotes_dto.py
+│   |  └── AdditonalNotes.py
+│   └── schemas/
+│      └── AdditonalNotes_dto.py
 ├── CaseSearch/
 │   ├── core/
 │   |  ├── CaseSearch_chain.py
-│   |  ├── CaseSearch_config.py
+│   |  └── CaseSearch_config.py
 │   ├── routers/
-│   |  ├── CaseSearch.py
-│   ├── schemas/
-│   |  ├── CaseSearch_dto.py
+│   |  └── CaseSearch.py
+│   └── schemas/
+│      └── CaseSearch_dto.py
 ├── Company_Terms_Analyze/
 │   ├── core/
-│   |  ├── AdditonalNotes_chain.py
-│   |  ├── AdditonalNotes_config.py
+│   |  ├── Company_chain.py
+│   |  └── Company_config.py
 │   ├── routers/
-│   |  ├── AdditonalNotes.py
+│   |  └── Company_Terms_Analzye.py
 │   ├── schemas/
-│   |  ├── AdditonalNotes_dto.py
+│     └── Company_dto.py
+│   └── .DS_Store
 ├── Complain_Email/
 │   ├── core/
-│   |  ├── AdditonalNotes_chain.py
-│   |  ├── AdditonalNotes_config.py
+│   |  ├── Email_chain.py
+│   |  └── Email_config.py
 │   ├── routers/
-│   |  ├── AdditonalNotes.py
-│   ├── schemas/
-│   |  ├── AdditonalNotes_dto.py
+│   |  └── Complain_Email.py
+│   └── schemas/
+│      └── Email_dto.py
 ├── Improvement/
 │   ├── core/
 │   |  ├── Improvement_chain.py
-│   |  ├── Improvement_config.py
+│   |  └── Improvement_config.py
 │   ├── routers/
-│   |  ├── Improvement.py
-│   ├── schemas/
-│   |  ├── Improvement_dto.py
+│   |  └── Improvement.py
+│   └── schemas/
+│      └── Improvement_dto.py
 ├── ResponseExcel/
 │   ├── core/
-│   |  ├── AdditonalNotes_chain.py
-│   |  ├── AdditonalNotes_config.py
+│   |  └── makeExcel.py
 │   ├── routers/
-│   |  ├── AdditonalNotes.py
-│   ├── schemas/
-│   |  ├── AdditonalNotes_dto.py
+│   |  └── MVPExcel.py
+│   └── .DS_Store
 ├── Term_Analyze/
 │   ├── core/
-│   |  ├── AdditonalNotes_chain.py
-│   |  ├── AdditonalNotes_config.py
+│   |  ├── MVP_chain.py
+│   |  ├── MVP_config.py
+│   |  └── MVP_rag.py
+│   ├── data/
+│   |  ├── LAW_TEXT.py
+│   |  ├── advertisement.txt
+│   |  ├── auto_payment.txt
+│   |  ├── liability.txt
+│   |  ├── privacy.txt
+│   |  └── refund.txt
 │   ├── routers/
-│   |  ├── AdditonalNotes.py
-│   ├── schemas/
-│   |  ├── AdditonalNotes_dto.py
+│   |  └── MVP.py
+│   └── schemas/
+│      ├── .DS_Store
+│      └── MVP_dto.py
 ├── data/
+│     └── .DS_Store
 │
-├── api/                       # API 통신 레이어
-│   ├── termsAnalysis.js      # 소비자용 약관 분석 API
-│   ├── businessAnalysis.js   # 기업용 약관 분석 API
-│   ├── questionAnswer.js     # 추가 질문 API
-│   ├── complaintEmail.js     # 컴플레인 메일 생성 API
-│   └── similarCases.js       # 유사 사례 검색 API
-│
-├── styles/                    # CSS 파일 (컴포넌트와 동일한 구조)
-│   ├── common/
-│   └── home/
-│
-├── App.jsx                    # 루트 컴포넌트
-└── main.jsx                   # 앱 진입점
+├── MVP_backup.py
+├── MVP_main.py
+└── main.jsx                 
 ```
 
 ## 🎯 주요 기능
